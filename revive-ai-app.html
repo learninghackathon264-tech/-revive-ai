@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>REVIVE AI – Don’t replace it. Revive it.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f5f3;--surface:#fff;--ink:#12302d;--muted:#58706c;--line:#d3dedb;--accent:#b4571f;--accent-ink:#fff;--ok:#1d7a52;--warn:#a8590f;--bad:#a33a2e;--tint:#e3ece9;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1f1d;--surface:#142b28;--ink:#e6f2ee;--muted:#93aea8;--line:#264541;--accent:#e08a4c;--accent-ink:#1a0e05;--ok:#5fd1a0;--warn:#f0b36a;--bad:#f08a7e;--tint:#1b3834;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1f1d;--surface:#142b28;--ink:#e6f2ee;--muted:#93aea8;--line:#264541;--accent:#e08a4c;--accent-ink:#1a0e05;--ok:#5fd1a0;--warn:#f0b36a;--bad:#f08a7e;--tint:#1b3834;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "DM Sans",system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h1,h2,h3{font-family:"Bricolage Grotesque","DM Sans",sans-serif;margin:0;line-height:1.1}
+h1{font-size:clamp(40px,12vw,64px);font-weight:800;letter-spacing:-.03em}
+h1 span{color:var(--accent)}
+.tag{color:var(--muted);margin:10px 0 0}
+.ta{font-size:15px;margin-top:4px;color:var(--accent);font-weight:500}
+h2{font-size:22px;font-weight:700;margin:32px 0 12px}
+.devs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dev,.chip{font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:12px;cursor:pointer}
+.dev{padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:14px}
+.dev b{font-size:26px;font-weight:400}
+.chip{display:block;width:100%;text-align:left;padding:13px 14px;margin-bottom:8px}
+.dev[aria-pressed=true],.chip[aria-pressed=true]{border-color:var(--accent);background:var(--tint);box-shadow:inset 0 0 0 1px var(--accent)}
+select{font:inherit;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.go,.sec{font:inherit;font-weight:700;border-radius:12px;padding:14px 18px;cursor:pointer;width:100%;margin-top:14px}
+.go{background:var(--accent);color:var(--accent-ink);border:0}
+.go:disabled{opacity:.4;cursor:not-allowed}
+.sec{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.res{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px;margin-top:20px}
+.verdict{font-family:"Bricolage Grotesque",sans-serif;font-size:28px;font-weight:800;margin:0 0 4px}
+.v-ok{color:var(--ok)}.v-warn{color:var(--warn)}.v-bad{color:var(--bad)}
+.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.row span:first-child{color:var(--muted)}
+.row b{text-align:right}
+ol{padding-left:20px;margin:8px 0}
+.note{font-size:14px;color:var(--muted)}
+.bar{height:10px;border-radius:6px;background:var(--tint);overflow:hidden;margin:6px 0 2px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .5s}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px}
+.stat b{display:block;font:800 28px "Bricolage Grotesque",sans-serif}
+.stat span{font-size:13px;color:var(--muted)}
+.item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.ai{background:var(--surface);border:1.5px solid var(--accent);border-radius:16px;padding:16px;margin-top:24px}
+.ai h2{margin:0 0 4px}
+textarea{font:inherit;width:100%;min-height:84px;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical;margin-top:10px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.ai input[type=file]{width:100%;font-size:14px;margin-top:10px;color:var(--muted)}
+.sm{font-size:13px}
+input[type=text]{font:inherit;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);margin-top:8px}
+.li{align-items:center;gap:10px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:20px}summary{cursor:pointer;font:700 18px "Bricolage Grotesque",sans-serif}details h3{font-size:16px;margin:12px 0 2px}#qrImg{background:#fff;display:inline-block;padding:10px;border-radius:10px;margin:8px 0}@media print{main>*:not(#pitch){display:none!important}}</style>
+<style>.mini{width:auto!important;margin:0 0 0 6px!important;padding:5px 10px!important;font-size:13px;display:inline-block;text-decoration:none;text-align:center}</style>
+</head>
+<body>
+<main>
+  <h1>Revive <span>AI</span></h1>
+  <p class="tag">Find out if a broken gadget is worth fixing before you throw it away.</p>
+  <p class="ta">தூக்கி எறியாதே, புதுப்பி.</p>
+  <button class="sec" id="lang" style="width:auto;margin:12px 0 0;padding:8px 16px">தமிழ்</button>
+
+  <section class="ai" id="off">
+  <h2>Smart search</h2>
+  <p class="note" style="margin:0">Type the problem, for example “fan humming slow”. Works offline.</p>
+  <input type="text" id="offTxt" placeholder="Describe the problem" aria-label="Describe the problem">
+  <button class="go" id="offGo">Find the fix</button>
+  <p class="note" id="offOut"></p>
+</section>
+<section class="ai" id="ai" hidden>
+  <h2>Ask REVIVE AI</h2>
+  <p class="note" style="margin:0">Describe the fault in your own words, in any language. Add a photo and AI will look for visible damage.</p>
+  <textarea id="aiTxt" placeholder="Example: my mixer smells burnt and stops after a minute" aria-label="Describe the problem"></textarea>
+  <label for="aiImg" class="sec" style="display:block;text-align:center;margin-top:10px;padding:14px;cursor:pointer;border-style:dashed">📷 Take or upload a photo of the faulty item</label><input type="file" id="aiImg" accept="image/*" hidden aria-label="Photo of the device"><img id="aiPrev" alt="Selected photo" hidden style="max-width:100%;max-height:220px;border-radius:12px;margin-top:10px;display:block">
+  <div class="pair"><select id="aiLang" aria-label="Answer language"><option>English</option><option>Tamil</option><option>Hindi</option></select><button class="go" id="aiGo" style="margin:0">Diagnose with AI</button></div>
+  <div id="aiOut" aria-live="polite"></div>
+</section>
+
+  <section class="ai" id="asst" hidden>
+  <h2>Repair assistant</h2>
+  <p class="note" style="margin:0">Ask follow-up questions about your repair. It uses the last diagnosis as context.</p>
+  <div id="chat" aria-live="polite"></div>
+  <input type="text" id="chatIn" placeholder="Example: how do I test the capacitor?" aria-label="Ask the repair assistant">
+  <button class="go" id="chatGo">Ask</button>
+</section>
+
+  <h2>Or pick it yourself</h2>
+  <input type="text" id="devQ" placeholder="Search your device, for example: AC, kettle, grinder" aria-label="Search device">
+  <div class="devs" id="devs" style="margin-top:10px"></div>
+
+  <div id="s2" hidden>
+    <h2>2. What’s the problem?</h2>
+    <div id="syms"></div>
+    <button class="sec" id="tips" hidden>How to make it last longer</button>
+    <div id="tipsOut" aria-live="polite"></div>
+    <h2>3. How old is it?</h2>
+    <select id="age" aria-label="Device age">
+      <option value="0">Under 3 years</option>
+      <option value="1">3 to 7 years</option>
+      <option value="2">8 years or more</option>
+    </select>
+    <button class="go" id="run" disabled>Diagnose</button>
+  </div>
+
+  <div id="out" class="res" hidden aria-live="polite"></div>
+
+  <h2>Your impact</h2>
+  <div class="stats">
+    <div class="stat"><b id="tK">0 kg</b><span>e-waste kept out of landfill</span></div>
+    <div class="stat"><b id="tM">₹0</b><span>saved vs buying new</span></div>
+    <div class="stat"><b id="tC">0 kg</b><span>manufacturing CO₂ avoided (estimate)</span></div>
+    <div class="stat"><b id="tN">0</b><span>devices revived</span></div>
+  </div>
+  <div class="bar"><i id="bar" style="width:0"></i></div>
+  <p class="note" id="goal"></p>
+  <div id="log"></div>
+  <button class="sec" id="clr" hidden>Clear history</button>
+
+  <section id="shops">
+    <h2>Nearby repair shops</h2>
+    <p class="note" style="margin:0">Find electricians, mechanics and repair shops close to your home.</p>
+    <button class="sec" id="loc">Use my location</button>
+    <p class="note" id="locMsg"></p>
+    <div id="cats" class="devs" style="grid-template-columns:1fr 1fr"></div>
+    <h2 style="font-size:19px">My trusted shops</h2>
+    <input type="text" id="shName" maxlength="50" placeholder="Shop or mechanic name" aria-label="Shop name">
+    <select id="shType" style="margin-top:8px" aria-label="Shop type"></select>
+    <input type="text" id="shPhone" maxlength="15" inputmode="tel" placeholder="Phone number" aria-label="Phone number">
+    <input type="text" id="shAddr" maxlength="120" placeholder="Address or Google Maps link" aria-label="Address">
+    <div class="pair"><button class="go" id="shSave" style="margin:10px 0 0">Save shop</button><button class="sec" id="shHere" style="margin:10px 0 0">Save at my location</button></div>
+    <div id="shList"></div>
+  </section>
+
+  <div id="qrBox" class="res" hidden><b>Repair record</b><br><div id="qrImg"></div><p class="note sm" id="qrTxt"></p><button class="sec" onclick="this.parentNode.hidden=true">Close</button></div>
+
+  <section id="mk" hidden>
+    <h2>Reuse board</h2>
+    <p class="note" id="mkF" hidden></p>
+    <p class="note" style="margin:0">Give a working or repairable item a second owner. Listings are saved on this device only.</p>
+    <input type="text" id="mkItem" maxlength="60" placeholder="Item or part, for example: 2.5µF fan capacitor" aria-label="Item">
+    <select id="mkCond" aria-label="Condition" style="margin-top:8px"><option>Working</option><option>Needs a small repair</option><option>For parts</option><option>Working spare part</option></select>
+    <input type="text" id="mkArea" maxlength="40" placeholder="Area or city" aria-label="Area">
+    <input type="text" id="mkContact" maxlength="60" placeholder="How to contact you" aria-label="Contact">
+    <button class="go" id="mkPost">Post item</button>
+    <div id="mkList" style="margin-top:12px"></div>
+  </section>
+  <section id="dn">
+    <h2>Donate a gadget</h2>
+    <p class="note" style="margin:0">Don’t need it any more? Give it away for free instead of selling it. Phones, chargers, mics, headphones, batteries, speakers and other gadgets can all find a new owner. No money is involved. Donations are saved on this device only.</p>
+    <input type="text" id="dnItem" maxlength="60" placeholder="What are you donating? For example: old phone charger" aria-label="Donation item">
+    <select id="dnType" style="margin-top:8px" aria-label="Gadget type"><option value="Phone">Phone</option><option value="Laptop or tablet">Laptop or tablet</option><option value="Headphones or mic">Headphones or mic</option><option value="Battery or power bank">Battery or power bank</option><option value="Charger or cable">Charger or cable</option><option value="Speaker">Speaker</option><option value="Small appliance">Small appliance</option><option value="Other gadget">Other gadget</option></select>
+    <select id="dnCond" style="margin-top:8px" aria-label="Condition"><option value="Working">Working</option><option value="Needs a small repair">Needs a small repair</option><option value="For parts">For parts</option></select>
+    <input type="text" id="dnArea" maxlength="40" placeholder="Area or city" aria-label="Area">
+    <input type="text" id="dnContact" maxlength="60" placeholder="How to contact you" aria-label="Contact">
+    <button class="go" id="dnPost">Donate item</button>
+    <div id="dnList" style="margin-top:12px"></div>
+    <h3 style="font-size:19px;margin-top:20px">Where to drop it off</h3>
+    <p class="note" style="margin:0">Open a map search near you. Use “Use my location” in Nearby repair shops for better results.</p>
+    <div id="dnPlaces" class="devs" style="grid-template-columns:1fr 1fr;margin-top:10px"></div>
+    <p class="note sm">Before donating a phone or laptop, back up and erase your personal data. Do not donate swollen or leaking batteries. Take them to an authorised e-waste recycler.</p>
+  </section>
+  <details id="pitch"><summary>About this project (SIH pitch)</summary>
+<h3>Problem</h3><p>Indian homes throw away working-in-part electronics because people cannot tell what is wrong or what a fix costs. India is among the world’s largest e-waste producers.</p>
+<h3>Solution</h3><p>REVIVE AI diagnoses a fault from a short description, says whether to fix, repair, reuse or recycle, shows repair cost against buying new, and tracks e-waste avoided.</p>
+<h3>How it works</h3><p>Fault knowledge base for common household devices, AI diagnosis from text and photo, offline smart search, a reuse board, QR repair records, and Tamil, Hindi and English support.</p>
+<h3>Impact</h3><p>Less landfill, lower household spending, and more work for local repair technicians.</p>
+<h3>Feasibility</h3><p>A single web app with no special hardware. Next steps: verified technician directory, authorised recycler partnerships, and city-level pilots.</p>
+<button class="sec" onclick="document.getElementById('pitch').open=true;window.print()">Print or save as PDF</button></details>
+  <p class="note">Costs are typical Indian market estimates, not quotes. Unplug a device before opening it, and leave mains-powered repairs to a technician if you are unsure.</p>
+</main>
+<script>
+// cost = repair cost in ₹; lvl: 1 = fix at home, 2 = repair shop
+const D={
+ headphones:{n:"Headphones",i:"🎧",buy:1500,kg:.3,s:[
+  {t:"Sound only in one ear",c:"Broken wire near the jack or cable",cost:150,lvl:1,st:["Check with another device to rule out the source","Replace the cable, or re-solder the jack","Test both sides before closing it up"]},
+  {t:"Crackling or static",c:"Dirty or loose jack contact",cost:50,lvl:1,st:["Clean the jack with isopropyl alcohol","Reseat the plug firmly","Replace the cable if it persists"]},
+  {t:"Won’t charge",c:"Faulty charging port or tired battery",cost:500,lvl:2,st:["Try a different cable and charger","Clean the port with a wooden toothpick","A technician can replace the port or battery"]}]},
+ fan:{n:"Ceiling fan",i:"🌀",buy:2500,kg:4,s:[
+  {t:"Spins slowly",c:"Weak capacitor",cost:80,lvl:1,st:["Switch off at the mains and wait 5 minutes","Match the capacitor’s µF rating printed on it","Swap it in and test on all speeds"]},
+  {t:"Humming but not spinning",c:"Failed capacitor or jammed bearing",cost:150,lvl:1,st:["Give the blades a gentle push by hand","If it turns freely, replace the capacitor","If it is stiff, replace the bearings"]},
+  {t:"Loud grinding noise",c:"Worn or dry bearings",cost:200,lvl:1,st:["Check for loose blade screws first","Lubricate the bearings","Replace bearings if the noise stays"]},
+  {t:"Burning smell",c:"Burnt motor winding",cost:1200,lvl:2,st:["Switch it off at once","Do not run it again","Take it to a technician for rewinding"]}]},
+ laptop:{n:"Laptop",i:"💻",buy:45000,kg:2.2,s:[
+  {t:"Very slow or hanging",c:"Old hard disk or too little RAM",cost:3500,lvl:2,st:["Back up your data first","Upgrade to an SSD and add RAM","Reinstall the OS"]},
+  {t:"Battery drains fast",c:"Worn-out battery",cost:3000,lvl:2,st:["Check battery health in system settings","Order a battery matching your model number","Have it fitted by a shop"]},
+  {t:"Overheats and fan roars",c:"Dust and dried thermal paste",cost:700,lvl:2,st:["Have the vents cleaned","Re-apply thermal paste","Use a hard surface, not a bed"]},
+  {t:"Screen stays black",c:"Loose display cable or failed panel",cost:4000,lvl:2,st:["Connect an external monitor to test","If that works, the display or its cable is at fault","A shop can reseat or replace the cable"]}]},
+ mixer:{n:"Mixer grinder",i:"🫙",buy:3500,kg:3,s:[
+  {t:"Motor won’t start",c:"Worn carbon brushes",cost:150,lvl:2,st:["Unplug and open the base","Replace both carbon brushes together","Check the switch contacts"]},
+  {t:"Jar leaks",c:"Perished rubber gasket",cost:100,lvl:1,st:["Remove the jar blade assembly","Replace the rubber gasket and seal","Tighten and test with water"]},
+  {t:"Burning smell",c:"Burnt armature",cost:1000,lvl:2,st:["Stop using it","Do not run it with a heavy load","Get the armature rewound or replaced"]}]},
+ phone:{n:"Phone",i:"📱",buy:15000,kg:.2,s:[
+  {t:"Cracked screen",c:"Damaged display glass",cost:2500,lvl:2,st:["Back up your data","Choose a repair shop that gives a warranty","Ask for the part’s grade before paying"]},
+  {t:"Battery drains fast",c:"Degraded battery",cost:1500,lvl:2,st:["Check battery health in settings","Replace with a quality battery","Update the OS afterwards"]},
+  {t:"Not charging",c:"Lint in the port or a worn port",cost:300,lvl:1,st:["Look into the port with a torch","Clear lint gently with a wooden pick","Try another cable and charger"]}]},
+ washer:{n:"Washing machine",i:"🧺",buy:25000,kg:40,s:[
+  {t:"Water not draining",c:"Clogged drain pump or filter",cost:200,lvl:1,st:["Unplug and place a tray under the filter","Remove coins, lint and threads","Refit the filter and run a rinse"]},
+  {t:"Loud noise while spinning",c:"Worn drum bearings",cost:3500,lvl:2,st:["Check the load is balanced","Listen for grinding when the drum turns by hand","A technician can replace the bearings"]},
+  {t:"Won’t start",c:"Door lock or control board fault",cost:2500,lvl:2,st:["Check the door closes with a click","Try a different power socket","A technician can test the lock and board"]}]},
+ tv:{n:"Television",i:"📺",buy:25000,kg:8,s:[
+  {t:"Sound but no picture",c:"Failed backlight strip",cost:3000,lvl:2,st:["Shine a torch at the screen to see a faint image","If you see one, the backlight is the fault","A technician can replace the LED strip"]},
+  {t:"Won’t switch on",c:"Power board capacitors or fuse",cost:1500,lvl:2,st:["Try another socket and remote batteries","Check for a standby light","A technician can replace the power board parts"]},
+  {t:"Lines on the screen",c:"Loose or damaged panel cable",cost:2500,lvl:2,st:["Check if the lines move when you press the screen edge","If so, the cable is loose","A shop can reseat or replace it"]}]},
+ fridge:{n:"Refrigerator",i:"🧊",buy:25000,kg:45,s:[
+  {t:"Water under the fridge",c:"Blocked defrost drain",cost:50,lvl:1,st:["Unplug it and empty the fridge","Clear the drain hole with warm water and a soft wire","Dry the tray and restart"]},
+  {t:"Clicks but won’t start",c:"Faulty start relay",cost:300,lvl:2,st:["Listen for a click every few minutes","Do not keep re-plugging it","A technician can replace the relay"]},
+  {t:"Runs but not cooling",c:"Low gas or a leak",cost:2500,lvl:2,st:["Check the door seal for gaps","Keep vents clear of the wall","A technician must find the leak and refill gas"]}]},
+ induction:{n:"Induction stove",i:"🍳",buy:3500,kg:2,s:[
+  {t:"Doesn’t detect the pan",c:"Pan not induction-compatible",cost:0,lvl:1,st:["Test with a magnet: it must stick to the base","Centre the pan on the ring","Try a flat-bottomed steel pan"]},
+  {t:"Fan noise or overheating",c:"Dust in the fan and vents",cost:100,lvl:1,st:["Unplug and let it cool","Blow dust from the vents with a hair dryer on cool air","Keep the vents clear when cooking"]},
+  {t:"Error code, no heating",c:"Failed power transistor",cost:800,lvl:2,st:["Note the error code on the display","Do not open it, it holds stored charge","A technician can replace the transistor"]}]}
+};
+const $=id=>document.getElementById(id);
+let dk=null,sy=null,hist=[];
+try{hist=JSON.parse(localStorage.getItem("revive")||"[]")}catch(e){}
+const save=()=>{try{localStorage.setItem("revive",JSON.stringify(hist))}catch(e){}};
+const inr=n=>"₹"+Math.round(n).toLocaleString("en-IN");
+
+$("devs").innerHTML=Object.keys(D).map(k=>`<button class="dev" data-k="${k}" aria-pressed="false"><b>${D[k].i}</b>${D[k].n}</button>`).join("");
+$("devs").onclick=e=>{const b=e.target.closest(".dev");if(!b)return;
+ dk=b.dataset.k;sy=null;$("run").disabled=true;$("out").hidden=true;
+ document.querySelectorAll(".dev").forEach(x=>x.setAttribute("aria-pressed",x===b));
+ $("syms").innerHTML=D[dk].s.map((s,i)=>`<button class="chip" data-i="${i}" aria-pressed="false">${s.t}</button>`).join("");
+ $("s2").hidden=false;$("s2").scrollIntoView({behavior:"smooth",block:"nearest"})};
+$("syms").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;
+ sy=+b.dataset.i;$("run").disabled=false;
+ document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b))};
+
+$("run").onclick=()=>{
+ const d=D[dk],s=d.s[sy],age=+$("age").value,ratio=s.cost/d.buy;
+ let v,cls,why;
+ if(age===2&&ratio>.3){v="Recycle or donate";cls="v-bad";why="The device is old and the repair costs a lot compared with its value. Pass it to an authorised e-waste recycler or a refurbisher.";}
+ else if(s.lvl===1){v="Fix it yourself";cls="v-ok";why="This is a low-cost repair that most people can do at home with basic tools.";}
+ else if(ratio<=.5){v="Take it to a repair shop";cls="v-warn";why="Repair costs far less than buying new. Get a quote before agreeing.";}
+ else{v="Repair only if sentimental";cls="v-bad";why="Repair costs more than half the price of a new one. Consider a refurbished unit.";}
+ const save$=Math.max(0,d.buy-s.cost),keep=v==="Recycle or donate"?0:d.kg;
+ $("out").innerHTML=`<p class="verdict ${cls}">${v}</p><p class="note" style="margin:0 0 10px">${why}</p>
+ <div class="row"><span>Likely cause</span><b>${s.c}</b></div>
+ <div class="row"><span>Repair cost</span><b>about ${inr(s.cost)}</b></div>
+ <div class="row"><span>New one costs</span><b>about ${inr(d.buy)}</b></div>
+ <div class="row"><span>E-waste avoided</span><b>${keep} kg</b></div>
+ ${extra({key:dk,name:d.n,cause:s.c,buy:d.buy,cost:s.cost,kg:d.kg,lvl:s.lvl,age,parts:partsFor(d,s)})}
+ <h3 style="margin:16px 0 4px;font-size:18px">What to do</h3><ol>${s.st.map(x=>`<li>${x}</li>`).join("")}</ol>
+ ${s.lvl===2?`<a class="sec" style="display:block;text-align:center;text-decoration:none" href="${mapsQ(d.n+" repair shop near me")}" target="_blank" rel="noopener">Find repair shops near me</a>`:""}${keep?`<button class="go" id="done">Mark as revived</button>`:`<p class="note">Look for your state pollution control board’s list of authorised e-waste recyclers.</p>`}`;
+ $("out").hidden=false;$("out").scrollIntoView({behavior:"smooth",block:"start"});
+ const b=$("done");if(b)b.onclick=()=>{hist.unshift({n:d.n,t:s.t,kg:d.kg,m:save$,d:new Date().toLocaleDateString(),c:Math.round((EMB[dk]||d.kg*10)*[.7,.5,.25][age])});save();render();b.textContent="Added to your impact";b.disabled=true};
+};
+$("clr").onclick=()=>{hist=[];save();render()};
+function render(){
+ const kg=hist.reduce((a,h)=>a+h.kg,0),m=hist.reduce((a,h)=>a+h.m,0);
+ $("tK").textContent=(Math.round(kg*10)/10)+" kg";$("tM").textContent=inr(m);$("tC").textContent=Math.round(hist.reduce((a,h)=>a+(h.c||0),0))+" kg";$("tN").textContent=hist.length;
+ $("bar").style.width=Math.min(100,kg/10*100)+"%";
+ $("log").innerHTML=hist.map((h,i)=>`<div class="item"><span>${h.n}: ${h.t}</span><span><b>${h.kg} kg</b><button class="sec" style="width:auto;margin:0 0 0 8px;padding:4px 10px" data-qr="${i}">QR</button></span></div>`).join("")||`<p class="note">Nothing revived yet. Diagnose a device to start.</p>`;
+ $("clr").hidden=!hist.length;
+ const L=[[0,"Starter"],[2,"Fixer"],[10,"Revivalist"],[50,"Eco hero"]];let li=0;L.forEach((x,i)=>{if(kg>=x[0])li=i});const nx=L[li+1];
+ $("bar").style.width=(nx?Math.min(100,(kg-L[li][0])/(nx[0]-L[li][0])*100):100)+"%";
+ $("goal").textContent="Level: "+L[li][1]+(nx?". "+(Math.round((nx[0]-kg)*10)/10)+" kg more to reach "+nx[1]+".":". Top level reached.");
+}
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let smp=null,dl=null;
+(async()=>{try{smp=await claude.use("sample");dl=await claude.use("downloads")}catch(e){}
+ if(!smp)return;$("ai").hidden=false;$("tips").hidden=false;$("asst").hidden=false;
+ const hi=()=>{document.querySelector("label[for=aiImg]").hidden=true};try{const l=await smp.limits();if(!(l&&l.images))hi()}catch(e){hi()}})();
+$("aiGo").onclick=async()=>{
+ const txt=$("aiTxt").value.trim(),f=$("aiImg").files[0],out=$("aiOut");
+ if(!txt&&!f){out.innerHTML=`<p class="note">Describe the problem or add a photo first.</p>`;return}
+ $("aiGo").disabled=true;out.innerHTML=`<p class="note">Diagnosing…</p>`;
+ const lang=$("aiLang").value;
+ const p=`You are a careful repair expert for household electronics and appliances in India. Diagnose the fault from the description${f?" and photo":""}. Prefer repair and reuse over replacement. Costs are in Indian rupees. If the repair involves mains voltage, stored charge or gas, tell the person to use a qualified technician. Reply with JSON only, using exactly these keys: {\"device\":string,\"cause\":string,\"confidence\":\"low\"|\"medium\"|\"high\",\"verdict\":\"fix_yourself\"|\"repair_shop\"|\"reuse_donate\"|\"recycle\",\"verdict_label\":string,\"repair_cost_inr\":number,\"new_cost_inr\":number,\"weight_kg\":number,\"steps\":[string,string,string],\"safety\":string,\"parts\":[{\"name\":string,\"cost_inr\":number}],\"repairability_score\":number,\"problems\":[{\"issue\":string,\"where\":string,\"meaning\":string,\"severity\":\"low\"|\"medium\"|\"high\"}]}. repairability_score is 0 to 100, where 100 means easy and worthwhile to repair. problems lists every fault visible in the photo, such as cracks, burn marks, rust, corrosion, water damage, a swollen battery, loose or frayed wires, bent or missing parts, or heavy dust. Each item gives the issue, where on the device, what it suggests is wrong, and severity. Use [] when there is no photo. Never guess what you cannot see. Write every text value in ${lang}.\nProblem: ${txt||"(see photo)"}`;
+ try{
+  const fi=f?await shrink(f):null;const r=await smp.json(p,fi?{images:[fi]}:{});
+  const cls={fix_yourself:"v-ok",repair_shop:"v-warn"}[r.verdict]||"v-bad";
+  const keep=(r.verdict==="recycle")?0:(+r.weight_kg||0),sv=Math.max(0,(+r.new_cost_inr||0)-(+r.repair_cost_inr||0));
+  out.innerHTML=`<div class="res"><p class="verdict ${cls}">${esc(r.verdict_label)}</p>
+  <div class="row"><span>Device</span><b>${esc(r.device)}</b></div>
+  <div class="row"><span>Likely cause</span><b>${esc(r.cause)}</b></div>
+  <div class="row"><span>Confidence</span><b>${esc(r.confidence)}</b></div>
+  <div class="row"><span>Repair cost</span><b>about ${inr(+r.repair_cost_inr||0)}</b></div>
+  <div class="row"><span>New one costs</span><b>about ${inr(+r.new_cost_inr||0)}</b></div>
+  <ol>${(r.steps||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ol>
+  ${(r.problems||[]).length?H("Problems found in the photo")+r.problems.map(x=>`<div class="item li"><span><b>${esc(x.issue)}</b><br><span class="note sm">${esc(x.where)}. ${esc(x.meaning)}</span></span><b class="${x.severity==="high"?"v-bad":x.severity==="medium"?"v-warn":"v-ok"}">${esc(x.severity)}</b></div>`).join(""):(f?'<p class="note">No clear damage is visible in the photo. Describe the symptoms for a better result.</p>':"")}${extra({key:"",name:String(r.device),cause:String(r.cause),buy:+r.new_cost_inr||1,cost:+r.repair_cost_inr||0,kg:+r.weight_kg||0,lvl:r.verdict==="fix_yourself"?1:2,age:1,score:+r.repairability_score,parts:(r.parts||[]).map(p=>({name:String(p.name),cost:+p.cost_inr||0}))})}
+  <p class="note sm">${esc(r.safety)}</p>
+  ${keep?`<button class="go" id="aiDone">Mark as revived</button>`:""}
+  ${dl?`<button class="sec" id="aiSave">Save report</button>`:""}</div>`;
+  const d=$("aiDone");if(d)d.onclick=()=>{hist.unshift({n:String(r.device).slice(0,40),t:String(r.cause).slice(0,50),kg:keep,m:sv});save();render();d.textContent="Added to your impact";d.disabled=true};
+  const s=$("aiSave");if(s)s.onclick=async()=>{try{await dl.save({filename:"revive-report.txt",data:`REVIVE AI report\n\n${r.verdict_label}\nDevice: ${r.device}\nLikely cause: ${r.cause}\nRepair cost: about Rs ${r.repair_cost_inr}\nNew one: about Rs ${r.new_cost_inr}\n\nSteps:\n${(r.steps||[]).map((x,i)=>(i+1)+". "+x).join("\n")}\n\n${r.safety}\n`})}catch(e){}};
+ }catch(e){
+  out.innerHTML=`<p class="note">${e&&e.code==="not_granted"?"Permission was declined, so AI diagnosis is off. You can still pick the device below.":e&&e.code==="rate_limited"?"Too many requests. Wait a minute and try again.":"Couldn’t diagnose this. Add more detail and try again."}</p>`;
+ }finally{$("aiGo").disabled=false}
+};
+$("tips").onclick=async()=>{if(!smp||!dk)return;const o=$("tipsOut");o.innerHTML='<p class="note">Thinking…</p>';
+ try{const r=await smp.json(`Give 4 short, practical care tips to make a ${D[dk].n} last longer in Indian conditions such as power cuts, voltage fluctuation, humidity and dust. Reply with JSON only: {"tips":[string,string,string,string]}`);o.innerHTML=`<ol>${(r.tips||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`}catch(e){o.innerHTML='<p class="note">Couldn’t load tips. Try again.</p>'}};
+let db=null,uid=null;
+(async()=>{try{db=await claude.use("db");const u=await claude.use("user");uid=u?await u.id():null}catch(e){db=localDb();uid="me"}
+ if(!db)return;$("mk").hidden=false;
+ const t=setTimeout(()=>{$("mkList").innerHTML='<p class="note">Couldn’t load listings. Reopen the page to retry.</p>'},10000);
+ db.collection("listings").orderBy("ts","desc").limit(30).onSnapshot(s=>{clearTimeout(t);
+  $("mkList").innerHTML=s.docs.map(d=>{const r=d.data();return `<div class="item li"><div><b>${esc(r.item)}</b><br><span class="note sm">${esc(r.cond)}, ${esc(r.area)}<br>${esc(r.contact)}</span></div>${uid&&r.uid===uid?`<button class="sec" style="width:auto;margin:0;padding:6px 10px" data-del="${esc(d.id)}">Remove</button>`:""}</div>`}).join("")||'<p class="note">No listings yet. Post the first one.</p>'},()=>{clearTimeout(t);$("mkList").innerHTML='<p class="note">Couldn’t load listings.</p>'});
+})();
+$("mkPost").onclick=async()=>{const item=$("mkItem").value.trim(),area=$("mkArea").value.trim(),contact=$("mkContact").value.trim();
+ if(!db||!item||!area||!contact){$("mkPost").textContent="Fill in item, area and contact";setTimeout(()=>$("mkPost").textContent="Post item",2000);return}
+ try{await db.collection("listings").doc(Math.random().toString(36).slice(2,12)).set({item,area,contact,cond:$("mkCond").value,uid:uid||"",ts:Date.now()});
+  ["mkItem","mkArea","mkContact"].forEach(i=>$(i).value="");$("mkPost").textContent="Posted";setTimeout(()=>$("mkPost").textContent="Post item",1500)}
+ catch(e){$("mkPost").textContent="You can’t post on this view";setTimeout(()=>$("mkPost").textContent="Post item",2500)}};
+$("mkList").onclick=async e=>{const b=e.target.closest("[data-del]");if(!b||!db)return;try{await db.collection("listings").doc(b.dataset.del).delete()}catch(x){}};
+const TA={"Find out if a broken gadget is worth fixing before you throw it away.":"உடைந்த சாதனத்தை தூக்கி எறியும் முன், அதை சரிசெய்வது பயனுள்ளதா என்று அறியுங்கள்.","Smart search":"ஸ்மார்ட் தேடல்","Find the fix":"தீர்வைக் கண்டுபிடி","Or pick it yourself":"அல்லது நீங்களே தேர்ந்தெடுங்கள்","2. What’s the problem?":"2. என்ன பிரச்சினை?","3. How old is it?":"3. எத்தனை வருடம் பழையது?","Diagnose":"பரிசோதி","Your impact":"உங்கள் தாக்கம்","e-waste kept out of landfill":"குப்பையில் சேராத மின்னணுக் கழிவு","saved vs buying new":"புதிதாக வாங்குவதைவிட சேமிப்பு","Clear history":"வரலாற்றை அழி","Reuse board":"மறுபயன்பாட்டுப் பலகை","Post item":"பொருளை பதிவிடு","Mark as revived":"புதுப்பித்ததாகக் குறி","Fix it yourself":"நீங்களே சரிசெய்யுங்கள்","Take it to a repair shop":"ரிப்பேர் கடைக்கு எடுத்துச் செல்லுங்கள்","Recycle or donate":"மறுசுழற்சி செய் அல்லது தானம் செய்","Repair only if sentimental":"உணர்வுப்பூர்வமானால் மட்டும் சரிசெய்யுங்கள்","Likely cause":"சாத்தியமான காரணம்","Repair cost":"பழுது செலவு","New one costs":"புதியது விலை","E-waste avoided":"தவிர்த்த கழிவு","What to do":"என்ன செய்ய வேண்டும்","Find repair shops near me":"அருகிலுள்ள ரிப்பேர் கடைகள்","Under 3 years":"3 வருடத்துக்குள்","3 to 7 years":"3 முதல் 7 வருடம்","8 years or more":"8 வருடம் அல்லது அதற்கு மேல்","Working":"நல்ல நிலை","Needs a small repair":"சிறிய பழுது தேவை","For parts":"உதிரிப் பாகங்களுக்கு","Headphones":"ஹெட்போன்","Ceiling fan":"மின்விசிறி","Laptop":"லேப்டாப்","Mixer grinder":"மிக்ஸி","Phone":"போன்","Washing machine":"வாஷிங் மெஷின்","Television":"தொலைக்காட்சி","Refrigerator":"குளிர்சாதனப் பெட்டி","Induction stove":"இண்டக்ஷன் அடுப்பு","Repair record":"பழுது பதிவு","Close":"மூடு","About this project (SIH pitch)":"இந்த திட்டம் பற்றி (SIH)","Spare parts you may need":"தேவைப்படும் உதிரிப் பாகங்கள்","Repairability score":"பழுது சாத்தியக் குறியீடு","Repair vs replace":"பழுது vs புதியது","Environmental impact":"சுற்றுச்சூழல் தாக்கம்","Repair assistant":"பழுது உதவியாளர்","Air conditioner":"ஏர் கண்டிஷனர்","Water heater":"வாட்டர் ஹீட்டர்","Electric kettle":"மின் கெட்டில்","Iron box":"இஸ்திரி பெட்டி","Microwave oven":"மைக்ரோவேவ் அவன்","Wet grinder":"கிரைண்டர்","Rice cooker":"ரைஸ் குக்கர்","Water purifier":"வாட்டர் ப்யூரிஃபையர்","Inverter or UPS":"இன்வெர்ட்டர்","Air cooler":"ஏர் கூலர்","Vacuum cleaner":"வாக்யூம் கிளீனர்","Hair dryer":"ஹேர் டிரையர்","Bluetooth speaker":"ப்ளூடூத் ஸ்பீக்கர்","Wi-Fi router":"வைஃபை ரவுட்டர்","Printer":"பிரிண்டர்","Power bank":"பவர் பேங்க்","LED bulb or tube light":"எல்இடி பல்பு / டியூப்லைட்","Sewing machine":"தையல் இயந்திரம்","Bicycle":"சைக்கிள்","Table fan":"டேபிள் ஃபேன்","Toaster or air fryer":"டோஸ்டர் / ஏர் ஃப்ரையர்","Trimmer":"டிரிம்மர்","Gas stove":"கேஸ் அடுப்பு","Problems found in the photo":"புகைப்படத்தில் கண்ட பிரச்சினைகள்","Repair, per year of use":"பழுது, ஆண்டுக்கான செலவு","New one, per year of use":"புதியது, ஆண்டுக்கான செலவு","Manufacturing CO₂ avoided":"தவிர்த்த உற்பத்தி CO₂"};
+let ta=false;const orig=new WeakMap();
+function applyLang(){const w=document.createTreeWalker(document.querySelector("main"),NodeFilter.SHOW_TEXT);let n;
+ while(n=w.nextNode()){if(n.parentNode.id==="lang")continue;if(!orig.has(n))orig.set(n,n.nodeValue);const o=orig.get(n),k=o.trim();
+  if(TA[k]){const v=ta?o.replace(k,TA[k]):o;if(n.nodeValue!==v)n.nodeValue=v}}}
+$("lang").onclick=()=>{ta=!ta;$("lang").textContent=ta?"English":"தமிழ்";applyLang()};
+new MutationObserver(()=>{if(ta)applyLang()}).observe(document.querySelector("main"),{childList:true,subtree:true});
+$("offGo").onclick=()=>{const syn={ac:"air",geyser:"water",ro:"water",wifi:"router",bulb:"led",stove:"gas",cycle:"bicycle",mixie:"mixer",grinder:"mixer",tv:"television",fridge:"refrigerator",mobile:"phone",slow:"slowly",hang:"hanging",hot:"overheats",heating:"overheats",smoke:"burning",smell:"burning",noise:"noisy",sound:"noise",wash:"washing"};
+ const q=$("offTxt").value.toLowerCase().split(/\W+/).filter(x=>x.length>2).map(x=>syn[x]||x);let best=null,bs=0;
+ for(const k in D)D[k].s.forEach((s,i)=>{const h=(D[k].n+" "+s.t+" "+s.c).toLowerCase();let sc=0;q.forEach(x=>{if(h.includes(x))sc++});if(sc>bs){bs=sc;best=[k,i]}});
+ if(!best){$("offOut").textContent="No match found. Pick your device below.";return}
+ $("offOut").textContent="";document.querySelector('.dev[data-k="'+best[0]+'"]').click();document.querySelector('.chip[data-i="'+best[1]+'"]').click();$("run").click()};
+$("log").onclick=e=>{const b=e.target.closest("[data-qr]");if(!b)return;const h=hist[+b.dataset.qr];
+ const t=`REVIVE AI | ${h.n} | ${h.t} | ${h.kg} kg e-waste avoided | Rs ${Math.round(h.m)} saved | ${h.d||""}`;
+ const el=$("qrImg");el.innerHTML="";$("qrTxt").textContent=t;
+ if(window.QRCode)new QRCode(el,{text:t,width:200,height:200});else el.textContent="QR needs internet the first time.";
+ $("qrBox").hidden=false;$("qrBox").scrollIntoView({block:"nearest"})};
+function localDb(){const K="reviveListings",get=()=>{try{return JSON.parse(localStorage.getItem(K)||"{}")}catch(e){return{}}};let cb=null;
+ const put=o=>{try{localStorage.setItem(K,JSON.stringify(o))}catch(e){}if(cb)cb()};
+ return{collection:()=>({orderBy:()=>({limit:()=>({onSnapshot:f=>{cb=()=>f({docs:Object.entries(get()).sort((a,b)=>b[1].ts-a[1].ts).map(([id,v])=>({id,data:()=>v}))});cb()}})}),
+  doc:id=>({set:async v=>{const o=get();o[id]=v;put(o)},delete:async()=>{const o=get();delete o[id];put(o)}})})}}
+const EMB={headphones:15,fan:40,laptop:300,mixer:25,phone:60,washer:300,tv:400,fridge:400,induction:30};
+const PT=[["capacitor","Capacitor (match µF and voltage)",80],["bearing","Bearings (match the old size)",150],["carbon brush","Carbon brushes (pair)",80],["gasket|seal","Rubber gasket or seal",100],["thermal paste","Thermal paste",150],["ssd|hard disk","SSD",2500],["ram","RAM module",1500],["pump|filter","Drain pump or filter",600],["relay","Start relay",250],["backlight|led strip","LED backlight strip",1800],["power board|fuse","Power board",1200],["display cable|panel cable","Display cable",600],["transistor","Power transistor (IGBT)",400],["winding|armature","Motor winding or armature",900],["door lock","Door lock",500],["control board","Control board",1800],["gas|compressor","Gas refill or compressor part",1500],["charging port","Charging port",300],["battery","Replacement battery (match model)",1500],["cable|jack","Cable or audio jack",100],["display|screen|glass","Display or screen",2000]];
+const H=t=>`<h3 style="margin:16px 0 4px;font-size:18px">${t}</h3>`;
+const A=(k,n,i,buy,kg,l)=>{D[k]={n,i,buy,kg,s:l.map(x=>({t:x[0],c:x[1],cost:x[2],lvl:x[3],st:x[4].split("|")}))}};
+A("ac","Air conditioner","❄️",38000,35,[["Not cooling enough","Dirty filter or low gas",2500,2,"Clean the filter and set cool mode|Check the outdoor fan is running|A technician must check gas pressure"],["Water dripping indoors","Blocked drain pipe",300,2,"Switch it off|Clear the drain pipe outlet|A technician can flush the drain line"]]);
+A("geyser","Water heater","🚿",8000,7,[["No hot water","Failed heating element or thermostat",1200,2,"Switch off at the mains|Check the trip switch and indicator|A technician can replace the element"],["Leaking","Worn gasket or corroded joint",400,2,"Turn off power and water|Find if the leak is at a joint or the tank|Joint leaks need a gasket, tank leaks mean replacement"]]);
+A("kettle","Electric kettle","🫖",1200,0.8,[["Doesn’t heat","Blown thermal fuse or loose wire",250,2,"Try another socket|Do not open it while plugged in|A technician can replace the fuse"],["Won’t switch off","Scale on the sensor",0,1,"Unplug and let it cool|Descale with vinegar and water|Rinse well and test"]]);
+A("iron","Iron box","👕",1500,1,[["Not heating","Faulty thermostat or broken wire",200,2,"Check the plug and socket|Look for a burnt cord end|A technician can replace the thermostat"],["Sticks to clothes","Dirty sole plate",0,1,"Unplug and cool it|Wipe with a damp cloth and baking soda|Dry fully before use"]]);
+A("micro","Microwave oven","🍲",9000,12,[["Runs but doesn’t heat","Failed magnetron or diode",3000,2,"Do not open it, it holds high voltage|Test with a cup of water for one minute|A technician must replace the magnetron"],["Plate doesn’t turn","Worn coupler or roller ring",150,1,"Check the roller ring sits properly|Check the coupler under the plate|Replace either if cracked"]]);
+A("grinder","Wet grinder","🫘",6500,10,[["Motor hums, drum stuck","Loose or worn belt",150,1,"Unplug it first|Check the belt tension|Replace the belt if cracked"],["Loud grinding noise","Worn bearings",600,2,"Check the stones are fitted correctly|Listen near the base|A technician can replace the bearings"]]);
+A("cooker","Rice cooker","🍚",2500,2,[["Stays in warm mode","Faulty thermostat",300,2,"Check the pot sits flat|Clean the heating plate|A technician can replace the thermostat"],["Doesn’t heat","Burnt thermal fuse or heating plate",400,2,"Try another socket|Do not use it if the cord is damaged|A technician can test the fuse"]]);
+A("ro","Water purifier","💧",14000,6,[["Low water flow","Clogged sediment or carbon filter",600,1,"Close the water inlet|Replace the filter cartridges|Flush before use"],["Keeps running, little water","Weak pump or exhausted membrane",2000,2,"Check the tank is not full|Check the inlet water pressure|A technician can replace the membrane or pump"]]);
+A("inverter","Inverter or UPS","🔋",15000,15,[["Short backup time","Worn battery",6500,2,"Check water level if it is a tubular battery|Test battery voltage|Replace with a matching battery"],["Overload beeping","Too much load or loose terminals",100,1,"Remove heavy appliances|Clean and tighten the battery terminals|Test again"]]);
+A("cooler","Air cooler","🌬️",6500,8,[["Air isn’t cool","Dry pads or dead water pump",400,1,"Check the water level|Replace the cooling pads|Test or replace the pump"],["Fan runs slowly","Weak capacitor",100,1,"Unplug it first|Match the capacitor’s µF rating|Swap it and test"]]);
+A("vac","Vacuum cleaner","🧹",6000,4,[["Weak suction","Full dust bag or blocked filter",0,1,"Empty or replace the bag|Wash or replace the filter|Check the hose for blockages"],["Stops after a few minutes","Overheating motor or worn brushes",500,2,"Let it cool and clear blockages|Listen for sparking|A technician can replace the brushes"]]);
+A("dryer","Hair dryer","💇",1500,0.6,[["Cuts off while using","Dust-clogged vent",0,1,"Unplug and cool it|Clean the rear grille with a brush|Test again"],["Blows cold","Burnt heating coil",200,2,"Check the heat switch|Smell for burning|A technician can replace the coil"]]);
+A("speaker","Bluetooth speaker","🔊",2500,0.5,[["Won’t pair","Software glitch",0,1,"Hold the power button to reset|Forget the device on your phone|Pair again"],["Distorted or no sound","Loose connector or damaged cone",400,2,"Test at low volume|Check the audio cable if any|A shop can reseat or replace the driver"]]);
+A("router","Wi-Fi router","📶",2000,0.4,[["Keeps disconnecting","Overheating or old firmware",0,1,"Move it to an open, cool spot|Restart it|Update the firmware"],["No power light","Faulty adapter",300,1,"Test with the same-voltage adapter|Check the cable|Replace the adapter"]]);
+A("printer","Printer","🖨️",8000,6,[["Streaks or faded print","Clogged print head or low ink",300,1,"Run the head-cleaning cycle|Replace the cartridge|Print a test page"],["Paper jams","Worn feed rollers",400,2,"Clear all torn paper|Clean the rollers with a damp cloth|Replace the rollers if smooth"]]);
+A("pbank","Power bank","🔌",1200,0.3,[["Doesn’t charge devices","Worn battery cells",500,2,"Test with another cable|Check the port for lint|Replace the cells only via a shop"],["Doesn’t charge itself","Damaged cable or port",100,1,"Swap the cable and charger|Clean the port gently|Replace the cable"]]);
+A("led","LED bulb or tube light","💡",300,0.1,[["Flickers","Failing driver capacitor",60,2,"Try another holder|Check for loose wiring|Replace the driver or bulb"],["Tube blinks and won’t light","Old starter or choke",60,1,"Switch off at the wall|Replace the starter|Replace the choke if it persists"]]);
+A("sewing","Sewing machine","🧵",6000,8,[["Skips stitches","Bent needle or wrong threading",20,1,"Replace the needle|Re-thread the upper thread|Check the bobbin"],["Motor runs slowly","Worn belt or carbon brushes",300,2,"Check the belt tension|Clean and oil the machine|A technician can replace the brushes"]]);
+A("cycle","Bicycle","🚲",6000,14,[["Weak brakes","Worn pads or loose cable",150,1,"Check pad thickness|Tighten the brake cable|Replace the pads"],["Chain slips","Worn chain",400,1,"Clean and oil the chain|Check the chain length|Replace the chain"]]);
+A("tfan","Table fan","🌀",2000,3,[["Slow speed","Weak capacitor",80,1,"Unplug it first|Match the capacitor’s µF rating|Swap it and test"],["Oscillation stuck","Worn gear",100,1,"Check the oscillation knob|Open the gearbox and look for broken teeth|Replace the gear"]]);
+A("toaster","Toaster or air fryer","🍞",3500,2,[["Not heating","Burnt element or thermostat",500,2,"Check the plug and socket|Look for a broken element|A technician can replace it"],["Smoke or burning smell","Food residue",0,1,"Unplug and cool it|Clean the tray and crumbs|Run it empty once"]]);
+A("trimmer","Trimmer","💈",1500,0.2,[["Won’t charge","Dead battery",300,2,"Try another charger|Clean the charging contacts|A shop can replace the battery"],["Cuts poorly","Dull blades",150,1,"Clean and oil the blades|Replace the blade head|Test on dry hair"]]);
+A("gas","Gas stove","🔥",3500,6,[["Weak or yellow flame","Clogged burner",0,1,"Turn off the regulator|Clean the burner holes with a pin|Dry and refit it"],["Smell of gas","Leak at hose or regulator",300,2,"Turn off the regulator and open windows|Do not touch switches or light a flame|Call your gas agency or a technician"]]);
+Object.assign(EMB,{ac:500,geyser:80,kettle:15,iron:15,micro:100,grinder:80,cooker:20,ro:60,inverter:150,cooler:70,vac:40,dryer:10,speaker:20,router:15,printer:80,pbank:12,led:3,sewing:60,cycle:100,tfan:25,toaster:20,trimmer:8,gas:40});
+$("devs").innerHTML=Object.keys(D).map(k=>`<button class="dev" data-k="${k}" aria-pressed="false"><b>${D[k].i}</b>${D[k].n}</button>`).join("");
+PT.unshift(["thermostat|thermal fuse","Thermostat or thermal fuse",250],["heating element|coil|element","Heating element",400],["belt","Drive belt",150],["magnetron|diode","Magnetron or HV diode",2200],["membrane","RO membrane",2000],["pads","Cooler pads",300],["rollers|roller","Feed rollers",350],["print head|cartridge","Print head or cartridge",300],["adapter","Power adapter",300],["brake pad|pads|brake cable","Brake pads or cable",250],["chain","Bicycle chain",400],["starter|choke","Starter or choke",60],["driver","LED driver",80],["needle","Sewing needle set",40],["blade","Replacement blades",150],["regulator|hose","Gas hose or regulator",350]);
+let ctx="",chat=[],mkF="";
+function partsFor(d,s){const h=(s.c+" "+s.t+" "+s.st.join(" ")).toLowerCase(),out=[];
+ for(const [p,n,c] of PT){if(out.length>=3)break;if(new RegExp("\\b("+p+")","i").test(h)&&!out.some(x=>x.name===n))out.push({name:n,cost:c,k:p.split("|")[0]})}return out}
+function extra(o){ctx=o.name+": "+o.cause;
+ const sc=Number.isFinite(o.score)?Math.max(0,Math.min(100,Math.round(o.score))):Math.max(0,Math.min(100,Math.round(100-(o.cost/o.buy)*110+(o.lvl===1?10:0)-[0,10,30][o.age]))),
+ life=[4,2.5,1][o.age],ry=o.cost/life,ny=o.buy/6,co=Math.round((EMB[o.key]||o.kg*10)*[.7,.5,.25][o.age]),
+ lab=sc>=70?"Easy to repair":sc>=40?"Worth checking":"Hard to justify";
+ const pr=(o.parts||[]).map(p=>`<div class="item li"><span>${esc(p.name)}<br><span class="note sm">about ${inr(p.cost)}</span></span><span style="white-space:nowrap"><a href="https://www.google.com/search?q=${encodeURIComponent(p.name+" "+o.name+" spare part buy India")}" target="_blank" rel="noopener" class="sec" style="padding:4px 10px;text-decoration:none;font-size:13px;display:inline-block;width:auto;margin:0 4px 0 0">Buy</a><button class="sec" style="width:auto;margin:0;padding:4px 10px;font-size:13px" data-find="${esc(p.k||p.name.split(" ")[0])}">Reuse board</button></span></div>`).join("");
+ return H("Repairability score")+`<div class="bar"><i style="width:${sc}%"></i></div><p class="note" style="margin:0">${sc}/100, ${lab}</p>`
+ +H("Repair vs replace")+`<div class="row"><span>Repair, per year of use</span><b>${inr(ry)}</b></div><div class="row"><span>New one, per year of use</span><b>${inr(ny)}</b></div>`
+ +H("Environmental impact")+`<div class="row"><span>Manufacturing CO₂ avoided</span><b>about ${co} kg</b></div><p class="note sm">Rough estimate based on typical manufacturing emissions for this kind of device.</p>`
+ +(pr?H("Spare parts you may need")+pr:"")}
+function applyF(){document.querySelectorAll("#mkList .item").forEach(el=>{el.hidden=!!mkF&&!el.textContent.toLowerCase().includes(mkF)});const f=$("mkF");f.hidden=!mkF;f.innerHTML=mkF?`Showing listings that match “${esc(mkF)}”. <button class="sec" style="width:auto;margin:0 0 0 6px;padding:4px 10px" data-clr>Show all</button>`:""}
+new MutationObserver(()=>{if(mkF)applyF()}).observe($("mkList"),{childList:true});
+document.addEventListener("click",e=>{const f=e.target.closest("[data-find]");if(f){mkF=f.dataset.find.toLowerCase();applyF();$("mk").scrollIntoView({behavior:"smooth"});return}if(e.target.closest("[data-clr]")){mkF="";applyF()}});
+function draw(w){$("chat").innerHTML=chat.map(m=>`<p class="note" style="color:var(--ink);margin:8px 0"><b>${m.role==="user"?"You":"Assistant"}:</b> ${esc(m.content).replace(/\n/g,"<br>")}</p>`).join("")+(w?'<p class="note">Thinking…</p>':"")}
+$("chatGo").onclick=async()=>{const q=$("chatIn").value.trim();if(!q||!smp)return;$("chatIn").value="";chat.push({role:"user",content:q});
+ const sys=`You are REVIVE AI’s repair assistant for Indian households. Answer in ${$("aiLang").value}. Current case: ${ctx||"none yet"}. Give short numbered troubleshooting steps. For mains voltage, stored charge, gas or sealed batteries, tell the person to use a qualified technician. Keep answers under 120 words.`;
+ draw(true);
+ try{const r=await smp(chat.map((m,i)=>i===0?{role:"user",content:sys+"\n\nQuestion: "+m.content}:m));chat.push({role:"assistant",content:r.text});draw()}
+ catch(e){chat.pop();draw();$("chat").insertAdjacentHTML("beforeend",'<p class="note">Couldn’t reach the assistant. Try again.</p>')}};
+$("aiImg").onchange=()=>{const f=$("aiImg").files[0],p=$("aiPrev");if(!f){p.hidden=true;return}p.src=URL.createObjectURL(f);p.hidden=false};
+async function shrink(f){try{const bm=await createImageBitmap(f),k=Math.min(1,1280/Math.max(bm.width,bm.height)),c=document.createElement("canvas");c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext("2d").drawImage(bm,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(b=>r(b||f),"image/jpeg",.85))}catch(e){return f}}
+$("devQ").oninput=()=>{const q=$("devQ").value.toLowerCase().trim();document.querySelectorAll(".dev").forEach(b=>{b.hidden=!!q&&!(b.textContent+" "+b.dataset.k).toLowerCase().includes(q)})};
+const X=(k,n,i,buy,kg,a)=>{D[k]={n,i,buy,kg,s:a.map(([t,c,cost,lvl,st])=>({t,c,cost,lvl,st}))}};
+X("ac","Air conditioner","❄️",38000,35,[["Not cooling well","Dirty filters or coils, or low gas",600,2,["Clean the filters every month","Check that the outdoor fan is running","A technician can clean the coils and check the gas"]],["Water dripping indoors","Blocked drain pipe",300,2,["Switch it off","Check the drain pipe for kinks","A technician can flush the drain"]]]);
+X("geyser","Water heater","🚿",7000,6,[["No hot water","Failed heating element or thermostat",700,2,["Switch off at the mains","Check the MCB has not tripped","A technician can test and replace the element"]],["Water leaking","Worn gasket or valve",400,2,["Switch off and close the inlet","Note where it leaks","A technician can replace the gasket or valve"]]]);
+X("pump","Water pump motor","🚰",8000,12,[["Runs but no water","Air lock or worn foot valve",200,1,["Switch off and refill the priming port","Check the suction pipe for leaks","Replace the foot valve if it still fails"]],["Hums but won’t start","Failed capacitor",200,2,["Switch off at the mains","Do not keep trying to start it","A technician can replace the capacitor"]],["Leaks at the shaft","Worn mechanical seal",500,2,["Switch off","Check for water near the shaft","A technician can fit a new seal"]]]);
+X("inverter","Inverter or UPS","🔋",12000,15,[["Short backup time","Low water level or worn battery",60,1,["Check the distilled water level, top up only that","Clean the terminals","Test the battery if backup stays short"]],["Beeps, won’t use battery","Loose terminal or blown fuse",150,2,["Switch off and check the terminal clamps","Look for a burnt smell","A technician can replace the fuse"]]]);
+X("grinder","Wet grinder","🫘",6000,14,[["Grinds slowly","Worn grinding stones",500,2,["Check the stones for wear","Clean and dress them","Replace the stones if smooth"]],["Drum noise","Worn bearings",250,2,["Remove the drum and spin the shaft","If rough, the bearings are worn","A mechanic can replace them"]],["Motor stops midway","Weak capacitor",150,2,["Don’t overload the drum","Let it cool","A technician can replace the capacitor"]]]);
+X("cooker","Pressure cooker","🍲",1800,1.5,[["Steam leaks from the lid","Worn gasket",80,1,["Check the rubber ring for cracks","Replace with the same size ring","Test with water first"]],["Won’t build pressure","Clogged vent or weight",50,1,["Clean the vent with a pin","Check the weight valve moves freely","Replace the gasket if it still leaks"]]]);
+X("gas","Gas stove","🔥",3500,5,[["Yellow or weak flame","Clogged burner holes",0,1,["Close the regulator and let it cool","Clean the burner holes with a pin","Dry, refit and relight. If you smell gas, switch off the regulator, open windows and call the gas agency"]],["Igniter not clicking","Dead battery or dirty igniter",100,1,["Replace the igniter battery","Clean the igniter tip","Replace the igniter if it still fails"]]]);
+X("iron","Iron box","👔",1500,1,[["Not heating","Faulty thermostat or cord",200,2,["Test another socket","Check the cord for damage","A technician can replace the thermostat"]],["Steam not coming","Scale blocked the holes",0,1,["Use distilled water","Run vinegar water through and rinse","Clear the holes with a pin"]]]);
+X("kettle","Electric kettle","☕",1500,1,[["Not heating","Worn base contact or thermostat",150,2,["Try another socket","Clean the base contacts","A technician can replace the thermostat"]],["Leaks from the base","Perished seal",100,1,["Empty and dry it","Check the seal for cracks","Replace the seal"]]]);
+X("microwave","Microwave","♨️",9000,12,[["Turntable stuck","Dirty roller ring or loose coupler",100,1,["Remove and wash the ring and plate","Reseat the coupler","Replace the roller ring if cracked"]],["Runs but food stays cold","Failed diode or magnetron",2500,2,["Do not open it, it holds stored charge","Test with a cup of water","A technician must repair it"]]]);
+X("router","WiFi router","📶",2000,.4,[["Keeps disconnecting","Overheating or weak adapter",300,1,["Move it to an open, ventilated place","Check the adapter rating matches","Replace the adapter if it still drops"]],["Weak signal","Poor placement",0,1,["Place it high and central","Keep it away from walls and metal","Change the WiFi channel"]]]);
+X("printer","Printer","🖨️",8000,5,[["Streaky prints","Clogged print head or low ink",300,1,["Run the head cleaning cycle","Replace the cartridge if empty","Print a test page"]],["Paper jams","Worn pickup rollers",400,2,["Remove jammed paper gently","Clean the rollers with a damp cloth","A shop can replace the rollers"]]]);
+X("cycle","Bicycle","🚲",8000,14,[["Chain slips","Worn chain or sprocket",300,1,["Clean and oil the chain","Check if links are stretched","Replace the chain if it still slips"]],["Weak brakes","Worn brake pads or loose cable",150,1,["Tighten the brake cable","Check the pads","Replace the pads"]],["Flat tyre","Puncture",50,1,["Find the leak in a bucket of water","Patch the tube","Check the tyre for thorns"]]]);
+X("bike","Two-wheeler","🏍️",80000,110,[["Hard to start","Weak spark plug or battery",300,2,["Check the fuel and kill switch","Clean or replace the spark plug","Test the battery"]],["Weak brakes","Worn brake pads or low fluid",400,2,["Check the pads","Do not ride with weak brakes","A mechanic can replace the pads"]],["Low mileage","Dirty air filter or overdue service",500,2,["Clean or replace the air filter","Check the tyre pressure","Book a full service"]]]);
+Object.assign(EMB,{ac:500,geyser:80,pump:100,inverter:150,grinder:60,cooker:15,gas:30,iron:10,kettle:8,microwave:80,router:10,printer:60,cycle:100,bike:1000});
+PT.push(["heating element","Heating element",700],["thermostat","Thermostat",200],["spark plug","Spark plug",150],["brake pad","Brake pads",300],["chain","Chain",300],["air filter","Air filter",200],["cartridge|print head","Ink cartridge or print head",600],["magnetron","Magnetron",2500],["foot valve","Foot valve",250],["mechanical seal","Mechanical seal",400],["grinding stone|stones","Grinding stones",500]);
+Object.assign(TA,{"Air conditioner":"ஏசி","Water heater":"வாட்டர் ஹீட்டர்","Water pump motor":"தண்ணீர் மோட்டார்","Inverter or UPS":"இன்வெர்ட்டர்","Wet grinder":"கிரைண்டர்","Pressure cooker":"குக்கர்","Gas stove":"கேஸ் அடுப்பு","Iron box":"இஸ்திரிப் பெட்டி","Electric kettle":"எலக்ட்ரிக் கெட்டில்","Microwave":"மைக்ரோவேவ்","WiFi router":"வைஃபை ரவுட்டர்","Printer":"பிரிண்டர்","Bicycle":"சைக்கிள்","Two-wheeler":"இருசக்கர வாகனம்","Nearby repair shops":"அருகிலுள்ள ரிப்பேர் கடைகள்","My trusted shops":"எனது நம்பகமான கடைகள்","Use my location":"என் இடத்தைப் பயன்படுத்து","Save shop":"கடையை சேமி","Save at my location":"என் இடத்தில் சேமி","Electrician":"எலக்ட்ரீஷியன்","Plumber":"பிளம்பர்","Cycle shop":"சைக்கிள் கடை","Two-wheeler mechanic":"பைக் மெக்கானிக்","AC service":"ஏசி சர்வீஸ்","Appliance repair":"வீட்டு உபகரண ரிப்பேர்","Mobile and laptop repair":"மொபைல், லேப்டாப் ரிப்பேர்","E-waste recycler":"மின்னணுக் கழிவு மறுசுழற்சி"});
+$("devs").innerHTML=Object.keys(D).map(k=>`<button class="dev" data-k="${k}" aria-pressed="false"><b>${D[k].i}</b>${D[k].n}</button>`).join("");
+const CATS=[["Electrician","electrician"],["Appliance repair","home appliance repair shop"],["Mobile and laptop repair","mobile laptop repair shop"],["Two-wheeler mechanic","bike mechanic"],["Cycle shop","cycle repair shop"],["Plumber","plumber"],["AC service","AC repair service"],["E-waste recycler","e-waste recycling centre"]];
+let loc=null,shops=[];try{shops=JSON.parse(localStorage.getItem("reviveShops")||"[]")}catch(e){}
+const mapsQ=q=>"https://www.google.com/maps/search/"+encodeURIComponent(q)+(loc?`/@${loc.lat},${loc.lng},14z`:"");
+const saveShops=()=>{try{localStorage.setItem("reviveShops",JSON.stringify(shops))}catch(e){}};
+function drawCats(){$("cats").innerHTML=CATS.map(c=>`<a class="dev" style="text-decoration:none;padding:14px 6px;text-align:center" href="${esc(mapsQ(c[1]))}" target="_blank" rel="noopener">${c[0]}</a>`).join("")}
+$("shType").innerHTML=CATS.map(c=>`<option>${c[0]}</option>`).join("");
+function drawShops(){$("shList").innerHTML=shops.map((x,i)=>{const link=/^https:\/\//.test(x.addr||"");const href=x.lat!=null?"https://www.google.com/maps/dir/?api=1&destination="+x.lat+","+x.lng:link?x.addr:"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(x.addr||x.name);
+ return `<div class="item li"><span><b>${esc(x.name)}</b><br><span class="note sm">${esc(x.type)}${x.addr&&!link?", "+esc(x.addr):""}</span></span><span style="white-space:nowrap">${x.phone?`<a class="sec mini" href="tel:${esc(x.phone.replace(/[^\d+]/g,""))}">Call</a>`:""}<a class="sec mini" href="${esc(href)}" target="_blank" rel="noopener">Directions</a><button class="sec mini" data-shdel="${i}">Delete</button></span></div>`}).join("")||'<p class="note">No saved shops yet. Add your regular mechanic or electrician.</p>'}
+$("loc").onclick=()=>{if(!navigator.geolocation){$("locMsg").textContent="Location isn’t available here. Searches use “near me”.";return}
+ $("locMsg").textContent="Finding your location…";
+ navigator.geolocation.getCurrentPosition(p=>{loc={lat:+p.coords.latitude.toFixed(5),lng:+p.coords.longitude.toFixed(5)};$("locMsg").textContent="Location found. Searches now centre on your home area.";drawCats()},()=>{$("locMsg").textContent="Location was blocked. Searches use “near me” instead."},{timeout:10000})};
+function addShop(here){const name=$("shName").value.trim();if(!name){$("shName").focus();return}
+ const o={name,type:$("shType").value,phone:$("shPhone").value.trim(),addr:$("shAddr").value.trim()};
+ const fin=()=>{shops.unshift(o);saveShops();drawShops();["shName","shPhone","shAddr"].forEach(i=>$(i).value="")};
+ if(!here)return fin();
+ if(loc){o.lat=loc.lat;o.lng=loc.lng;return fin()}
+ if(!navigator.geolocation){$("locMsg").textContent="Location isn’t available here. Type the address instead.";return}
+ navigator.geolocation.getCurrentPosition(p=>{o.lat=+p.coords.latitude.toFixed(5);o.lng=+p.coords.longitude.toFixed(5);fin()},()=>{$("locMsg").textContent="Couldn’t get your location. Type the address instead."},{timeout:10000})}
+$("shSave").onclick=()=>addShop(false);$("shHere").onclick=()=>addShop(true);
+$("shList").onclick=e=>{const b=e.target.closest("[data-shdel]");if(!b)return;shops.splice(+b.dataset.shdel,1);saveShops();drawShops()};
+drawCats();drawShops();
+render();
+</script>
+<script>
+// Donate a gadget: free donations only, no payments. Saved on this device.
+(function(){
+ let dn=[];try{dn=JSON.parse(localStorage.getItem("reviveDonations")||"[]")}catch(e){}
+ const sv=()=>{try{localStorage.setItem("reviveDonations",JSON.stringify(dn))}catch(e){}};
+ const P=[["Electronics donation centre","electronics donation centre"],["E-waste collection point","e-waste collection point"],["NGO that takes old phones and laptops","NGO accepting old mobile phones laptops donation"],["Refurbisher or repair shop","electronics refurbisher"]];
+ $("dnPlaces").innerHTML=P.map((c,i)=>`<button class="dev" style="padding:14px 6px;text-align:center" data-dq="${i}">${c[0]}</button>`).join("");
+ $("dnPlaces").onclick=e=>{const b=e.target.closest("[data-dq]");if(!b)return;window.open(mapsQ(P[+b.dataset.dq][1]),"_blank","noopener")};
+ function draw(){$("dnList").innerHTML=dn.map((x,i)=>`<div class="item li"><div><b>${esc(x.item)}</b><br><span class="note sm">${esc(x.type)}, ${esc(x.cond)}, ${esc(x.area)}<br>${esc(x.contact)}</span></div><button class="sec" style="width:auto;margin:0;padding:6px 10px" data-dndel="${i}">Remove</button></div>`).join("")||'<p class="note">No donations yet. Offer your first gadget.</p>'}
+ $("dnPost").onclick=()=>{const item=$("dnItem").value.trim(),area=$("dnArea").value.trim(),contact=$("dnContact").value.trim(),b=$("dnPost");
+  if(!item||!area||!contact){b.textContent="Fill in item, area and contact";setTimeout(()=>b.textContent="Donate item",2000);return}
+  dn.unshift({item,type:$("dnType").value,cond:$("dnCond").value,area,contact,ts:Date.now()});sv();draw();
+  ["dnItem","dnArea","dnContact"].forEach(i=>$(i).value="");b.textContent="Thank you for donating";setTimeout(()=>b.textContent="Donate item",1800)};
+ $("dnList").onclick=e=>{const b=e.target.closest("[data-dndel]");if(!b)return;dn.splice(+b.dataset.dndel,1);sv();draw()};
+ Object.assign(TA,{"Donate a gadget":"கேஜெட்டை தானம் செய்யுங்கள்","Don’t need it any more? Give it away for free instead of selling it. Phones, chargers, mics, headphones, batteries, speakers and other gadgets can all find a new owner. No money is involved. Donations are saved on this device only.":"இனி தேவையில்லையா? விற்பதற்குப் பதிலாக இலவசமாக கொடுங்கள். போன், சார்ஜர், மைக், ஹெட்போன், பேட்டரி, ஸ்பீக்கர் போன்ற கேஜெட்டுகளுக்கு புதிய உரிமையாளர் கிடைக்கும். பணம் எதுவும் இல்லை. தானங்கள் இந்த சாதனத்தில் மட்டுமே சேமிக்கப்படும்.","Donate item":"பொருளை தானம் செய்","Where to drop it off":"எங்கே கொண்டு சேர்க்கலாம்","Open a map search near you. Use “Use my location” in Nearby repair shops for better results.":"உங்கள் அருகே வரைபடத் தேடலைத் திறக்கவும். சிறந்த முடிவுக்கு “அருகிலுள்ள ரிப்பேர் கடைகள்” பகுதியில் “என் இடத்தைப் பயன்படுத்து” அழுத்தவும்.","Electronics donation centre":"மின்னணு தான மையம்","E-waste collection point":"மின்னணுக் கழிவு சேகரிப்பு மையம்","NGO that takes old phones and laptops":"பழைய போன், லேப்டாப் ஏற்கும் தொண்டு நிறுவனம்","Refurbisher or repair shop":"புதுப்பிப்பவர் / ரிப்பேர் கடை","Before donating a phone or laptop, back up and erase your personal data. Do not donate swollen or leaking batteries. Take them to an authorised e-waste recycler.":"போன் அல்லது லேப்டாப் தானம் செய்யும் முன், உங்கள் தனிப்பட்ட தகவலை காப்பு எடுத்து அழித்துவிடுங்கள். வீங்கிய அல்லது கசியும் பேட்டரிகளை தானம் செய்ய வேண்டாம்; அங்கீகரிக்கப்பட்ட மறுசுழற்சி மையத்தில் கொடுங்கள்.","Phone":"போன்","Laptop or tablet":"லேப்டாப் அல்லது டேப்லெட்","Headphones or mic":"ஹெட்போன் அல்லது மைக்","Battery or power bank":"பேட்டரி அல்லது பவர் பேங்க்","Charger or cable":"சார்ஜர் அல்லது கேபிள்","Speaker":"ஸ்பீக்கர்","Small appliance":"சிறிய வீட்டு உபகரணம்","Other gadget":"மற்ற கேஜெட்","Remove":"நீக்கு"});
+ draw();
+})();
+</script>
+</body>
+</html>
